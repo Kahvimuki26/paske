@@ -147,16 +147,24 @@ local function updateBoxes()
     end
 end
 
-RunService.RenderStepped:Connect(function()
+local lastUpdate = 0
+
+RunService.RenderStepped:Connect(function(dt)
     if ESPEnabled then
-        updateBoxes()
+        lastUpdate = lastUpdate + dt
+        if lastUpdate >= 10 then -- update every 10 seconds
+            updateBoxes()
+            lastUpdate = 0
+        end
     else
         for _, box in pairs(Boxes) do
             box:Destroy()
         end
         Boxes = {}
+        lastUpdate = 0
     end
 end)
+
 
 ToggleButton.MouseButton1Click:Connect(function()
     ESPEnabled = not ESPEnabled
